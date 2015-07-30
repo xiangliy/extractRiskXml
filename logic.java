@@ -25,11 +25,17 @@ public class logic {
 	}
 	
 	public Object[][] searchxml(String keyword, Object[][] info){
+		
 		try{
 			for(int a = 0; a < 700; a++){
-				for(int b = 0; b < 6; b++){
+				for(int b = 0; b < 9; b++){
 					info[a][b] = "";
 				}
+			}
+			
+			if(keyword.isEmpty())
+			{
+				return info;
 			}
 			
 	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -50,32 +56,60 @@ public class logic {
 	            Element n = (Element)nnn;
 	            String content = nnn.getTextContent();
 	            
-	            String [] strlist = keyword.split(" ");
+	            
+	            String [] strlistkeyword = keyword.split(" ");
 	            
 	            boolean flag = false;
 	            int target = 0;
 	            
-	            for(int index = 0; index < strlist.length; index++){
-	            	if(content.toLowerCase().contains(strlist[index].toLowerCase())){
+	            for(int index = 0; index < strlistkeyword.length; index++){
+	            	if(content.toLowerCase().contains(strlistkeyword[index].toLowerCase())){
 	            		target++;
 		            }
 	            }
 	            
-	            if(target != strlist.length){
+	            if(target != strlistkeyword.length){
 	            	continue;
 	            }
-
+	            
+	            /*
+	            if(!content.toLowerCase().contains(keyword.toLowerCase())){
+	            	continue;
+	            }
+	            */
 	            //ID
 	            String id = "<html>";
 	            id += n.getAttribute("ID");
 
 	            info[k][0] = id;
+	            //Name
+	            String name = "<html>";
+	            name += n.getAttribute("Name");
+	            info[k][1] = name;
+
+	            //Summary
+	            String sumoutput = "<html>";
+	            Element des = (Element)n.getElementsByTagName("capec:Description").item(0);
+	            if(des != null){
+	            	Element sum = (Element)des.getElementsByTagName("capec:Summary").item(0);
+	            	if(sum != null){
+	            		String txt = getNodeValue(sum, "capec:Text");
+			            if(txt.isEmpty() == false){
+			            	sumoutput += txt;
+			            	sumoutput += "<br>";
+			            }
+			            
+			            info[k][2] = sumoutput;
+	            	}
+		            
+	            }
+	            
 	            // Typical severity
 	            String severityoutput = "<html>";
 	            Node severity = n.getElementsByTagName("capec:Typical_Severity").item(0);
 	            if(severity != null){
 	            	severityoutput +=severity.getFirstChild().getNodeValue();
-		            info[k][1] = severityoutput;
+		            info[k][3] = severityoutput;
 	            }
 	            
 	            // Typical likelihood of exploit
@@ -84,7 +118,7 @@ public class logic {
 	            if(exploit != null){
 		            String strlike = getNodeValue(exploit, "capec:Likelihood");
 		            if(strlike.isEmpty() == false){
-		            	likeoutput += "Likelihood: " + strlike;
+		            	likeoutput += strlike;
 		            	likeoutput += "<br>";
 		            }
 		            String strexplain = getNodeValue(exploit, "capec:Explanation");
@@ -93,7 +127,7 @@ public class logic {
 		            	likeoutput += "<br>";
 		            }
 		            
-		            info[k][2] = likeoutput;
+		            info[k][4] = likeoutput;
 	            }
 	            
 	            
@@ -123,7 +157,7 @@ public class logic {
 			            	}
 		            	}
 		            }
-		            info[k][3] = knowledgeoutput;
+		            info[k][5] = knowledgeoutput;
 	            }
 	            
 	            
@@ -151,7 +185,7 @@ public class logic {
 		            	}
 		            }
 		            
-		            info[k][4] = weaknessoutput;
+		            info[k][6] = weaknessoutput;
 	            }
 	            
 	            
@@ -175,8 +209,23 @@ public class logic {
 		            	ciaoutput += "<br>";
 		            }
 		            
-		            info[k][5] = ciaoutput;
+		            info[k][7] = ciaoutput;
 	            }
+	            
+	            //content which containing keyword
+	            String str = "<html>";
+	            String [] strlist = content.split("\\s\\s+");
+	            
+	            for(int index = 0 ; index < strlist.length; index++){
+	            	if(strlist[index].toLowerCase().contains(keyword.toLowerCase())){
+	            		str += strlist[index];
+	            		str = str.replaceAll("(?i)" + keyword, "<nobr style='color:red'>" + keyword + "</nobr>");
+	            		str += "<br>";
+	            	}
+	            }
+	            
+	            info[k][8] = str;
+	            
 	            k++;
 	        }
 	        

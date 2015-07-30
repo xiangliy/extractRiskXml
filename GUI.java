@@ -29,7 +29,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import javax.swing.ScrollPaneConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 
 
 public class GUI {
@@ -68,17 +70,17 @@ public class GUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 1100, 700);
+		frame.setBounds(100, 100, 1300, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		textField = new JTextField();
 		textField.setColumns(50);
 		
-		Object[][] info = new Object[700][6];
+		Object[][] info = new Object[700][9];
 		
 		logic l = new logic();
 		
-	    String[] header={"ID", "Typical severity","Typical likelihood of exploit"," Attack skills or knowledge required","Related weakness","CIA impact"};
+	    String[] header={"ID", "Name", "Summary", "Typical severity","Typical likelihood of exploit"," Attack skills or knowledge required","Related weakness","CIA impact", "content"};
 		
 		JButton btnNewButton = new JButton("Search");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -122,13 +124,24 @@ public class GUI {
 		);
 		
 		table=new JTable(info,header);
-		table.setRowHeight(200);
-		table.getColumnModel().getColumn(0).setPreferredWidth(5);
-		table.getColumnModel().getColumn(1).setPreferredWidth(5);
-		table.getColumnModel().getColumn(2).setPreferredWidth(50);
-		table.getColumnModel().getColumn(3).setPreferredWidth(500);
-		table.getColumnModel().getColumn(4).setPreferredWidth(200);
-		table.getColumnModel().getColumn(5).setPreferredWidth(150);
+		table.setRowHeight(250);
+		table.getColumnModel().getColumn(0).setPreferredWidth(10);
+		table.getColumnModel().getColumn(1).setPreferredWidth(50);
+		table.getColumnModel().getColumn(2).setPreferredWidth(200);
+		table.getColumnModel().getColumn(3).setPreferredWidth(30);
+		table.getColumnModel().getColumn(4).setPreferredWidth(50);
+		table.getColumnModel().getColumn(5).setPreferredWidth(200);
+		table.getColumnModel().getColumn(6).setPreferredWidth(100);
+		table.getColumnModel().getColumn(7).setPreferredWidth(150);
+		table.getColumnModel().getColumn(8).setPreferredWidth(400);
+		
+		for (int i = 0; i < table.getModel().getRowCount(); i++) {
+			   for (int j = 0; j < table.getModel().getColumnCount(); j++) {
+			      DefaultTableCellRenderer renderer =
+			         (DefaultTableCellRenderer)table.getCellRenderer(i, j);
+			      renderer.setVerticalAlignment(JTextField.TOP);
+			   } // End for(j)
+			} // End for(i)
 		scrollPane.setViewportView(table);
 		table.setPreferredScrollableViewportSize(new Dimension(550,30));
 		frame.getContentPane().setLayout(groupLayout);
